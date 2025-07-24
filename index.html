@@ -5,71 +5,221 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>牛马工资计算器</title>
     <style>
+        :root {
+            --primary-color: #3498db;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+            --text-color: #2c3e50;
+            --light-gray: #ecf0f1;
+            --dark-gray: #7f8c8d;
+        }
+        
         body {
             font-family: 'Arial', sans-serif;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
             text-align: center;
+            background-color: #f8f9fa;
+            color: var(--text-color);
         }
+        
         .container {
-            background-color: #f5f5f5;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
         }
+        
         h1 {
-            color: #333;
+            color: var(--text-color);
+            margin-bottom: 25px;
+            font-size: 28px;
         }
+        
         .input-group {
-            margin: 15px 0;
+            margin: 20px 0;
+            text-align: left;
         }
+        
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-weight: bold;
+            color: var(--text-color);
         }
+        
         input, select {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            width: 200px;
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
         }
-        #result {
-            font-size: 24px;
+        
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 17px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
             font-weight: bold;
-            color: #e74c3c;
-            margin: 20px 0;
+            width: 100%;
         }
-        #time-info {
-            color: #666;
+        
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        #result-page {
+            display: none;
+        }
+        
+        .status {
+            font-size: 30px;
+            color: var(--success-color);
+            margin: 30px 0;
+            font-weight: bold;
+        }
+        
+        .display-box {
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        
+        .display-title {
+            font-size: 16px;
+            color: var(--dark-gray);
             margin-bottom: 10px;
+        }
+        
+        .time-display {
+            font-size: 26px;
+            color: var(--primary-color);
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        .money-display {
+            font-size: 34px;
+            color: var(--danger-color);
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        #end-work-btn {
+            background-color: var(--danger-color);
+            margin-top: 30px;
+        }
+        
+        #end-work-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .info-text {
+            color: var(--dark-gray);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        .highlight {
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+        
+        .divider {
+            height: 1px;
+            background-color: #eee;
+            margin: 25px 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 输入页面 -->
+    <div class="container" id="input-page">
         <h1>🐮🐴 牛马工资计算器</h1>
         
         <div class="input-group">
-            <label for="start-time">上班时间</label>
+            <label for="work-date">工作日期</label>
+            <input type="date" id="work-date" required>
+            <p class="info-text">选择你今天的工作日期</p>
+        </div>
+        
+        <div class="input-group">
+            <label for="start-time">上班时间 <span class="highlight">*</span></label>
             <input type="time" id="start-time" required>
+            <p class="info-text">设置你今天实际的上班时间</p>
         </div>
         
         <div class="input-group">
-            <label for="end-time">下班时间</label>
+            <label for="end-time">下班时间 <span class="highlight">*</span></label>
             <input type="time" id="end-time" required>
+            <p class="info-text">设置你今天计划的下班时间</p>
+        </div>
+        
+        <div class="divider"></div>
+        
+        <div class="input-group">
+            <label for="salary-type">薪资类型 <span class="highlight">*</span></label>
+            <select id="salary-type">
+                <option value="daily">日薪</option>
+                <option value="monthly">月薪</option>
+                <option value="yearly">年薪</option>
+            </select>
         </div>
         
         <div class="input-group">
-            <label for="daily-salary">每日薪资 (元)</label>
-            <input type="number" id="daily-salary" min="0" step="0.01" required>
+            <label for="salary-amount">薪资金额 (元) <span class="highlight">*</span></label>
+            <input type="number" id="salary-amount" min="0" step="0.01" required>
+            <p class="info-text">根据选择的薪资类型填写金额</p>
         </div>
         
-        <button id="calculate-btn">开始计算</button>
+        <button id="calculate-btn">开始牛马生活</button>
+    </div>
+    
+    <!-- 结果页面 -->
+    <div class="container" id="result-page">
+        <h1>🐮🐴 牛马工资计算器</h1>
         
-        <div id="time-info"></div>
-        <div id="result">0.00 元</div>
+        <div class="status">牛马工作中...</div>
+        
+        <div class="display-box">
+            <div class="display-title">已工作时间</div>
+            <div class="time-display" id="worked-time">00:00:00</div>
+        </div>
+        
+        <div class="display-box">
+            <div class="display-title">还需工作时间</div>
+            <div class="time-display" id="remaining-time">00:00:00</div>
+        </div>
+        
+        <div class="display-box">
+            <div class="display-title">已赚金额</div>
+            <div class="money-display" id="earned-money">0.00 元</div>
+        </div>
+        
+        <div class="display-box">
+            <div class="display-title">当前时间</div>
+            <div class="time-display" id="current-time">--:--:--</div>
+        </div>
+        
+        <button id="end-work-btn">结束牛马生活</button>
     </div>
 
     <script src="calculator.js"></script>
